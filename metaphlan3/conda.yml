@@ -1,0 +1,8 @@
+name: metaphlan3
+channels:
+        - bioconda
+        - defaults
+
+dependencies:
+        - metaphlan
+        - bowtie2

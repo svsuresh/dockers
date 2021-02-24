@@ -1,0 +1,38 @@
+FROM ubuntu:20.04
+
+SHELL [ "/bin/bash", "--login", "-c" ]
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -qqy \
+    && apt-get install -qqy \
+        apt-utils \
+        wget \
+        vim \
+        sudo 
+
+ARG MINICONDA_VERSION=latest
+ARG USER=docker_user
+
+RUN groupadd ${USER} \
+    && useradd -m -g ${USER} ${USER} -d /home/${USER} -s /bin/bash -p "$(openssl passwd -1 docker_user)" \
+    && usermod -aG sudo docker_user
+
+WORKDIR /home/${USER}
+
+USER ${USER}
+
+RUN cd /tmp \
+    && wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh \
+    && bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p /home/${USER}/.conda \
+    && rm Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh 
+
+ENV PATH /home/${USER}/.conda/bin:$PATH
+COPY conda.yml /tmp/conda.yml
+RUN conda env create -f /tmp/conda.yml
+RUN echo "source activate metaphlan3" > ~/.bashrc
+ENV PATH /home/${USER}/.conda/envs/metaphlan3/bin:$PATH
+RUN echo $PATH
+# ADD --chown=docker_user:docker_user metaphlan_databases metaphlan_databases
+RUN sed -i '462,469 s/"mpa_" +//g' .conda/envs/metaphlan3/lib/python3.6/site-packages/metaphlan/metaphlan.py
+
