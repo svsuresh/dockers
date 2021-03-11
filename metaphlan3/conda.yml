@@ -1,8 +1,11 @@
 name: metaphlan3
 channels:
-        - bioconda
         - defaults
+        - bioconda
+        - conda-forge
+        - biobakery
 
 dependencies:
         - metaphlan
         - bowtie2
+        - samtools

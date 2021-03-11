@@ -34,5 +34,5 @@ RUN echo "source activate metaphlan3" > ~/.bashrc
 ENV PATH /home/${USER}/.conda/envs/metaphlan3/bin:$PATH
 RUN echo $PATH
 # ADD --chown=docker_user:docker_user metaphlan_databases metaphlan_databases
-RUN sed -i '462,469 s/"mpa_" +//g' .conda/envs/metaphlan3/lib/python3.6/site-packages/metaphlan/metaphlan.py
+# RUN sed -i '462,469 s/"mpa_" +//g' .conda/envs/metaphlan3/lib/python3.6/site-packages/metaphlan/metaphlan.py
 
