@@ -1,0 +1,26 @@
+FROM ubuntu:20.04
+
+SHELL [ "/bin/bash", "--login", "-c" ]
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -qqy \
+    && apt-get install -qqy \
+        apt-utils \
+        wget \
+        vim \
+        sudo 
+
+ARG MINICONDA_VERSION=latest
+
+RUN cd /tmp \
+    && wget --quiet https://repo.continuum.io/miniconda/Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh \
+    && bash Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh -f -b -p /.conda \
+    && rm Miniconda3-${MINICONDA_VERSION}-Linux-x86_64.sh 
+
+ENV PATH /.conda/bin:$PATH
+COPY conda_maxquant.yml /tmp/conda.yml
+RUN conda env create -f /tmp/conda.yml
+RUN echo "source activate maxquant" > ~/.bashrc
+ENV PATH /.conda/envs/maxquant/bin:$PATH
+RUN echo $PATH

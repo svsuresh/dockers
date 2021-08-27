@@ -1,0 +1,9 @@
+name: maxquant
+channels:
+        - bioconda
+        - conda-forge
+        - conda
+
+dependencies:
+        - maxquant
+        - dotnet =2.1
