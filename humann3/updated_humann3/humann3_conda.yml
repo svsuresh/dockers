@@ -1,0 +1,12 @@
+name: humann3
+channels:
+        - defaults
+        - bioconda
+        - conda-forge
+        - biobakery
+
+dependencies:
+        - humann
+        - metaphlan
+        - bowtie2
+        - samtools

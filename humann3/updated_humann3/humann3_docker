@@ -1,0 +1,38 @@
+FROM ubuntu:20.04
+
+SHELL [ "/bin/bash", "--login", "-c" ]
+
+ARG DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update -qqy \
+    && apt-get install -qqy \
+        apt-utils \
+        wget \
+        vim \
+        sudo 
+
+ARG USER=docker_user
+
+RUN groupadd ${USER} \
+    && useradd -m -g ${USER} ${USER} -d /home/${USER} -s /bin/bash -p "$(openssl passwd -1 docker_user)" \
+    && usermod -aG sudo docker_user
+
+WORKDIR /home/${USER}
+
+USER ${USER}
+
+RUN cd /tmp \
+    && wget https://github.com/conda-forge/miniforge/releases/latest/download/Mambaforge-$(uname)-$(uname -m).sh \
+    && bash Mambaforge-$(uname)-$(uname -m).sh -f -b -p /home/${USER}/.conda \
+    && rm Mambaforge-$(uname)-$(uname -m).sh 
+
+ENV PATH /home/${USER}/.conda/bin:$PATH
+COPY humann3_conda.yml /tmp/conda.yml
+RUN mamba env create -f /tmp/conda.yml
+RUN echo "source activate humann3" > ~/.bashrc
+ENV PATH /home/${USER}/.conda/envs/humann3/bin:$PATH
+# RUN echo $PATH
+# RUN echo $pwd
+# RUN humann_databases --download chocophlan DEMO humann_dbs
+# RUN humann_databases --download uniref DEMO_diamond humann_dbs
+# RUN humann_test
