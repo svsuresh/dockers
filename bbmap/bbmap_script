@@ -1,0 +1,30 @@
+#! /usr/bin/env bash
+in_R1=$1
+in_R2=$2
+extn=$3
+out=$4
+
+bbduk.sh -Xmx200g -Xms4g \
+    in1=$in_R1 \
+    in2=$in_R2 \
+    outm1=$4/${in_R1/\.$extn/"_filt1."$extn} \
+    outm2=$4/${in_R2/\.$extn/"_filt1."$extn} \
+    k=14 \ 
+    mm=f \
+    rcomp=f \
+    restrictleft=20 \ 
+    skipr1=F \
+    hdist=2 \
+    stats=$4/${in_R1/.$extn/}_first_stats.txt \
+    threads=20 
+
+bbduk.sh -Xmx30g -Xms1g \
+    in1=$4/${in_R1/\.$extn/"_filt1."$extn} \
+    in2=$4/${in_R2/\.$extn/"_filt1."$extn} \
+    outm1=$4/${in_R1/\.$extn/}_F_filtered.fastq.gz \
+    outm2=$4/${in_R2/\.$extn/}_R_filtered.fastq.gz \
+    k=30 mm=f rcomp=f restrictleft=70 skipr1=t \
+    hdist=4 \
+    stats=$4/${in_R1/\.$extn/}_second_stats.txt \ 
+    threads=20 \ 
+    minlen=100 
