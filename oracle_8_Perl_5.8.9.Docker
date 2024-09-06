@@ -10,10 +10,9 @@ RUN yum update
 # Install packages
 RUN yum install -y gcc make patch perl wget bzip2 perl-App-cpanminus.noarch
 
+RUN cpanm Devel::PatchPerl
 RUN mkdir -p /tmp/perl-5.8.9
 WORKDIR /tmp/perl-5.8.9
-
-RUN cpanm Devel::PatchPerl
 
 RUN \
   curl -SL https://www.cpan.org/src/5.0/perl-5.8.9.tar.bz2 -o perl-5.8.9.tar.bz2 \
@@ -25,6 +24,7 @@ RUN \
   && make install \
   && rm -fr /tmp/*
 
+RUN mkdir -p /tmp/Encode-Escape-0.14
 WORKDIR /tmp/Encode-Escape-0.14
 RUN \
     curl -SL https://cpan.metacpan.org/authors/id/Y/YO/YOU/Encode-Escape-0.14.tar.gz -o Encode-Escape-0.14.tar.gz \
