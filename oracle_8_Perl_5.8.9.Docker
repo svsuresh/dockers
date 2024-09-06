@@ -1,0 +1,40 @@
+FROM oraclelinux:8
+
+# Owner
+LABEL "Author"="Suresh"
+SHELL ["/bin/bash", "-c"]
+
+# Update distro
+RUN yum update
+
+# Install packages
+RUN yum install -y gcc make patch perl wget bzip2 perl-App-cpanminus.noarch
+
+RUN mkdir -p /tmp/perl-5.8.9
+WORKDIR /tmp/perl-5.8.9
+
+RUN cpanm Devel::PatchPerl
+
+RUN \
+  curl -SL https://www.cpan.org/src/5.0/perl-5.8.9.tar.bz2 -o perl-5.8.9.tar.bz2 \
+  && tar --strip-components=1 -xjf perl-5.8.9.tar.bz2 \
+  && rm perl-5.8.9.tar.bz2 \
+  && patchperl . \
+  && ./Configure -des -Dprefix=/opt/perl-5.8.9 \
+  && make -j $(nproc) test\
+  && make install \
+  && rm -fr /tmp/*
+
+WORKDIR /tmp/Encode-Escape-0.14
+RUN \
+    curl -SL https://cpan.metacpan.org/authors/id/Y/YO/YOU/Encode-Escape-0.14.tar.gz -o Encode-Escape-0.14.tar.gz \
+    && tar --strip-components=1 -xzf Encode-Escape-0.14.tar.gz \
+    && rm Encode-Escape-0.14.tar.gz\
+    && /opt/perl-5.8.9/bin/perl5.8.9 Makefile.PL \
+    && make -j ${nproc} test \
+    && make install \
+    && rm -fr /tmp/*
+
+ENV PATH="/opt/perl-5.8.9/bin:$PATH"
+WORKDIR /root
+ENTRYPOINT ["/bin/bash"]
